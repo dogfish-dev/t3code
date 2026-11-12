@@ -426,12 +426,11 @@ export class VoiceInputController {
     return this.discardRecording(message);
   }
 
-  appMovedToBackground(): Promise<void> | void {
-    return this.interruptRecording(
-      this.state.phase === "preparing"
-        ? "Voice input stopped when the app moved to the background."
-        : undefined,
-    );
+  appMovedToBackground(options: { readonly keepRecording: boolean }): Promise<void> | void {
+    if (this.state.phase === "preparing") {
+      return this.interruptRecording("Voice input stopped when the app moved to the background.");
+    }
+    if (!options.keepRecording) return this.stop();
   }
 
   handleRecorderStatus(status: VoiceRecorderStatus): Promise<void> | void {

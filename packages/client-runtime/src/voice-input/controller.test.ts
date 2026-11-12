@@ -833,6 +833,20 @@ describe("VoiceInputController", () => {
     expect(releaseRecording).toHaveBeenCalledOnce();
   });
 
+  it("keeps a backgrounded recording where allowed, and otherwise transcribes it", async () => {
+    const harness = createHarness();
+    await harness.controller.start();
+
+    await harness.controller.appMovedToBackground({ keepRecording: true });
+    expect(harness.controller.currentState.phase).toBe("recording");
+    expect(harness.recorder.stop).not.toHaveBeenCalled();
+
+    await harness.controller.appMovedToBackground({ keepRecording: false });
+    expect(harness.commits[0]?.text).toBe("hello new text");
+    expect(harness.controller.currentState).toMatchObject({ phase: "idle", error: null });
+    expect(harness.deleted).toEqual(["file:///voice.m4a"]);
+  });
+
   it("cancels preparation when the app reaches the background", async () => {
     const preparation = deferred<PreparedVoiceTranscription>();
     const preparationEntered = deferred<AbortSignal>();
@@ -846,7 +860,7 @@ describe("VoiceInputController", () => {
     });
     const starting = harness.controller.start();
     const signal = await preparationEntered.promise;
-    harness.controller.appMovedToBackground();
+    harness.controller.appMovedToBackground({ keepRecording: true });
     expect(signal.aborted).toBe(true);
     preparation.resolve(preparedTranscription());
     await starting;

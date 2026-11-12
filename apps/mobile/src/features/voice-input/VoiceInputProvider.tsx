@@ -85,8 +85,11 @@ const voiceInputAtom = Atom.make((get) => {
   );
   let keepAwakeSequence = 0;
   let audioToken: ReturnType<typeof acquireAudioSession> | null = null;
-  const permission = createVoiceRecordingPermission(() => {
-    void session.controller.appMovedToBackground();
+  const permission = createVoiceRecordingPermission({
+    onBackground: () => {
+      void session.controller.appMovedToBackground({ keepRecording: Platform.OS === "ios" });
+    },
+    onActive: () => void session.appBecameActive(),
   });
   const recorder = createLazyVoiceRecorder({
     getDestination: () => (registry.get(voiceRouteAtom) === null ? "local" : "environment"),
