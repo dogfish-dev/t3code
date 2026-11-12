@@ -1141,6 +1141,7 @@ describe("ThreadInlineFilePreview playback", () => {
       await activateAudioSession(recording);
       expect(audio.setAudioMode).toHaveBeenLastCalledWith({
         allowsRecording: true,
+        allowsBackgroundRecording: true,
         interruptionMode: "doNotMix",
         playsInSilentMode: true,
         shouldPlayInBackground: false,

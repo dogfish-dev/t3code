@@ -145,6 +145,12 @@ export class VoiceInputSession {
     return this.controller.start();
   }
 
+  // iOS pauses the recorder for a call or Siri without a status event.
+  async appBecameActive() {
+    if (this.controller.currentState.phase === "recording" && !this.dependencies.sampleRecording())
+      await this.controller.stop();
+  }
+
   dispose(): void {
     this.controller.dispose();
     this.stopRecordingActivity();

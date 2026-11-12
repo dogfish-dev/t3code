@@ -225,9 +225,11 @@ first of your preferred languages (**Settings → General → Language & Region*
 that Apple’s speech model supports. If none is supported, it tries the app’s
 language. Android transcribes on the device while you
 record and finishes after you stop. Recordings can be up to five
-minutes long. Canceling or an audio interruption discards the recording and
-preserves your existing draft. Navigating to another screen keeps dictation active;
-use the floating controls to finish or cancel. While recording, the screen stays
+minutes long. Canceling discards the recording and preserves your existing draft.
+Navigating to another screen keeps dictation active; use the floating controls to
+finish or cancel. On iPhone, locking the phone or switching to another app keeps
+recording; finish when you come back. On Android, leaving the app finishes the
+recording and transcribes what you said so far. While recording, the screen stays
 awake; it can sleep normally once recording stops.
 
 Choose a preferred order in **Settings → Voice**. Voice input requests the first

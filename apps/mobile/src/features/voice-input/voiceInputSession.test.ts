@@ -18,6 +18,7 @@ vi.mock("expo-audio", () => ({
   setAudioModeAsync: audio.setMode,
   setIsAudioActiveAsync: audio.setActive,
 }));
+vi.mock("react-native", () => ({ Platform: { OS: "ios" } }));
 
 import {
   createVoiceInputTarget,
@@ -397,6 +398,23 @@ describe("global voice input", () => {
     } finally {
       vi.useRealTimers();
     }
+  });
+
+  it("transcribes a recording the system paused while the app was away", async () => {
+    let sample: VoiceRecordingSample | null = { durationMillis: 1_000, metering: -40 };
+    const commit = vi.fn();
+    const { session, recorder } = createSession({ sampleRecording: () => sample });
+    await session.start(createTarget("first", () => "", commit, { start: 0, end: 0 }));
+
+    await session.appBecameActive();
+    expect(session.controller.currentState.phase).toBe("recording");
+    expect(recorder.stop).not.toHaveBeenCalled();
+
+    sample = null;
+    await session.appBecameActive();
+    expect(commit).toHaveBeenCalledWith("spoken text", { start: 11, end: 11 });
+    expect(session.controller.currentState.phase).toBe("idle");
+    session.dispose();
   });
 
   it("publishes which owners are focused", () => {
